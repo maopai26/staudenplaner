@@ -1,0 +1,19 @@
+{
+  "name": "Staudenbeet-Planer — Blühkalender",
+  "short_name": "Staudenbeet",
+  "description": "Plane ein Staudenbeet, das ganzjährig blüht — gefiltert nach Standort, Bodentyp und Blütenfarbe für das westdeutsche Klima.",
+  "id": "/staudenbeet-planer/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "de",
+  "background_color": "#223026",
+  "theme_color": "#223026",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

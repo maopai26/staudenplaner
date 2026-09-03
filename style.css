@@ -1,0 +1,444 @@
+/* ==========================================================
+   Staudenbeet-Planer — Herbarium-/Blühkalender-Ästhetik
+   ========================================================== */
+
+:root {
+  --tanne: #223026;
+  --tanne-2: #33452F;
+  --tanne-ink: #0F1712;
+  --paper: #F4EFE2;
+  --paper-2: #FBF8EF;
+  --ink: #2A2620;
+  --ink-soft: #5B564A;
+  --ochre: #B87F2A;
+  --ochre-light: #D6A34F;
+  --beere: #7A3B4E;
+  --sage: #8CA07D;
+  --line: rgba(42, 38, 32, 0.16);
+  --line-strong: rgba(42, 38, 32, 0.28);
+  --shadow: 0 1px 2px rgba(15, 23, 18, 0.08);
+  --radius-s: 3px;
+  --radius-m: 8px;
+  --serif: "Fraunces", ui-serif, Georgia, serif;
+  --sans: "Work Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.5;
+}
+
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+a { color: var(--beere); }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2.5px solid var(--ochre);
+  outline-offset: 2px;
+}
+
+/* ---------- Header ---------- */
+
+.site-head {
+  background: var(--tanne);
+  background-image:
+    radial-gradient(ellipse 520px 320px at 85% -10%, rgba(214, 163, 79, 0.16), transparent 60%),
+    radial-gradient(ellipse 420px 300px at 8% 110%, rgba(122, 59, 78, 0.20), transparent 60%);
+  color: var(--paper-2);
+  padding: 56px 0 44px;
+}
+
+.kicker {
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--sage);
+  margin: 0 0 10px;
+}
+
+.site-head h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 5.5vw, 3.1rem);
+  line-height: 1.05;
+  margin: 0 0 16px;
+  color: var(--paper-2);
+}
+
+.lede {
+  font-size: 1.05rem;
+  max-width: 46ch;
+  color: rgba(251, 248, 239, 0.82);
+  margin: 0;
+}
+
+/* ---------- Panels ---------- */
+
+main.wrap { padding-top: 36px; padding-bottom: 24px; }
+
+.panel {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: 28px clamp(18px, 4vw, 34px) 32px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+.panel-title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin: 0 0 22px;
+  color: var(--tanne);
+}
+
+.field {
+  border: 0;
+  padding: 0;
+  margin: 0 0 24px;
+}
+
+.field:last-of-type { margin-bottom: 0; }
+
+.field legend {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: var(--ink);
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.req {
+  font-weight: 400;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+
+/* ---------- Chips ---------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  line-height: 1.2;
+}
+
+.chip:hover { border-color: var(--ochre); }
+
+.chip[aria-pressed="true"] {
+  background: var(--tanne);
+  border-color: var(--tanne);
+  color: var(--paper-2);
+}
+
+.chip .hint {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 400;
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+.chip[aria-pressed="true"] .hint { color: rgba(251, 248, 239, 0.72); }
+
+.chip-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.18);
+  flex: none;
+}
+
+.chip-color[aria-pressed="true"] .swatch { border-color: rgba(255,255,255,0.6); }
+
+.chip[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------- Actions ---------- */
+
+.field-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--paper-2);
+  background: var(--beere);
+  border: none;
+  border-radius: var(--radius-s);
+  padding: 13px 26px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.btn-primary:hover { background: #653244; }
+.btn-primary:active { transform: translateY(1px); }
+
+.btn-text {
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 6px 0;
+}
+.btn-text:hover { color: var(--ink); }
+
+.hint-empty {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.94rem;
+  max-width: 44ch;
+  margin: 8px auto 40px;
+}
+
+/* ---------- Results summary ---------- */
+
+.results-summary {
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+  margin: 0 0 30px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.results-summary strong { color: var(--tanne); font-weight: 600; }
+
+/* ---------- Timeline ---------- */
+
+.timeline {
+  position: relative;
+}
+
+.month-block {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 4px 18px;
+  position: relative;
+}
+
+.month-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.month-rail::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: -28px;
+  left: 50%;
+  width: 2px;
+  background: var(--line-strong);
+  transform: translateX(-50%);
+}
+
+.month-block:last-child .month-rail::before { display: none; }
+
+.month-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--ochre);
+  border: 2px solid var(--paper-2);
+  box-shadow: 0 0 0 1.5px var(--ochre);
+  margin-top: 4px;
+  flex: none;
+  z-index: 1;
+}
+
+.month-block.is-empty .month-dot {
+  background: var(--paper-2);
+  box-shadow: 0 0 0 1.5px var(--line-strong);
+}
+
+.month-body { padding-bottom: 30px; }
+
+.month-name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.35rem;
+  color: var(--tanne);
+  margin: 0 0 4px;
+}
+
+.month-block.is-empty .month-name { color: var(--ink-soft); }
+
+.month-empty-note {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0 0 4px;
+}
+
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+/* ---------- Plant card (specimen label) ---------- */
+
+.plant-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+.plant-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--tanne-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.plant-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.plant-photo .ph-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plant-photo .credit {
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  font-size: 0.66rem;
+  color: rgba(251, 248, 239, 0.85);
+  background: rgba(15, 23, 18, 0.45);
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-decoration: none;
+}
+.plant-photo .credit:hover { background: rgba(15, 23, 18, 0.65); }
+
+.plant-info { padding: 14px 16px 16px; }
+
+.plant-name-de {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.08rem;
+  margin: 0 0 1px;
+  color: var(--ink);
+}
+
+.plant-name-la {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: 0 0 10px;
+}
+
+.plant-toxic {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--beere);
+  border: 1px solid var(--beere);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-bottom: 10px;
+}
+
+.plant-facts {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.86rem;
+}
+
+.plant-facts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 0;
+  color: var(--ink);
+}
+
+.plant-facts .k { color: var(--ink-soft); }
+.plant-facts .v { text-align: right; font-weight: 500; }
+
+/* ---------- Footer ---------- */
+
+.site-foot {
+  padding: 26px 0 60px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+.site-foot p { margin: 0 0 6px; max-width: 62ch; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 560px) {
+  .month-block { grid-template-columns: 48px 1fr; }
+  .site-head { padding: 44px 0 34px; }
+  .panel { padding: 22px 16px 26px; }
+}
+
+/* ---------- Reveal animation (single orchestrated moment) ---------- */
+
+.timeline.is-revealing .month-block {
+  opacity: 0;
+  animation: month-in 0.5s ease forwards;
+}
+@keyframes month-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

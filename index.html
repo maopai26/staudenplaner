@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Staudenbeet-Planer — ganzjähriger Blühkalender</title>
+<meta name="description" content="Plane ein Staudenbeet, das von Januar bis Dezember blüht. Nach Standort, Bodentyp und Blütenfarbe gefiltert, für das westdeutsche Klima.">
+
+<meta name="theme-color" content="#223026">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Staudenbeet">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <p class="kicker">Ein Blühkalender-Werkzeug</p>
+    <h1>Staudenbeet&#8209;Planer</h1>
+    <p class="lede">Stell dir dein Beet aus mehreren Stauden zusammen, das von Januar bis Dezember nie ganz ohne Blüten dasteht &mdash; abgestimmt auf das westdeutsche Klima.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="panel" id="filters" aria-labelledby="filters-title">
+    <h2 id="filters-title" class="panel-title">1. Rahmenbedingungen für dein Beet</h2>
+
+    <fieldset class="field">
+      <legend>Standort <span class="req">— eine Auswahl</span></legend>
+      <div class="chips" id="sun-chips" role="group" aria-label="Standort"></div>
+    </fieldset>
+
+    <fieldset class="field">
+      <legend>Bodentyp <span class="req">— eine Auswahl, gilt für das ganze Beet</span></legend>
+      <div class="chips" id="soil-chips" role="group" aria-label="Bodentyp"></div>
+    </fieldset>
+
+    <fieldset class="field">
+      <legend>Blütenfarben <span class="req">— bis zu 3, optional</span></legend>
+      <div class="chips chips-color" id="color-chips" role="group" aria-label="Blütenfarben"></div>
+    </fieldset>
+
+    <div class="field-actions">
+      <button type="button" class="btn-primary" id="plan-btn">Beet planen</button>
+      <button type="button" class="btn-text" id="reset-btn">Auswahl zurücksetzen</button>
+    </div>
+  </section>
+
+  <section class="panel" id="results" aria-labelledby="results-title" hidden>
+    <h2 id="results-title" class="panel-title">2. Dein Blühkalender</h2>
+    <p class="results-summary" id="results-summary"></p>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <p class="hint-empty" id="empty-hint">Wähle oben Standort und Bodentyp aus und klicke auf &bdquo;Beet planen&ldquo;, um deinen Blühkalender zu sehen.</p>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p>Pflanzenfotos &amp; Kurzinfos verlinkt über die Wikipedia&#8209;API &mdash; Bildrechte bei den jeweiligen Autor:innen auf Wikimedia Commons.</p>
+    <p>Alle Angaben ohne Gewähr &mdash; giftige Zierpflanzen sind mit einem Hinweis gekennzeichnet. Prüfe Standort&#8209; und Bodenangaben vor dem Kauf am besten nochmal in deinem Gartencenter.</p>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
