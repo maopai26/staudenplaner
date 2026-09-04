@@ -423,6 +423,13 @@ main.wrap { padding-top: 36px; padding-bottom: 24px; }
   font-size: 0.82rem;
 }
 .site-foot p { margin: 0 0 6px; max-width: 62ch; }
+.site-foot .version {
+  margin-top: 14px;
+  font-family: var(--sans);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+}
 
 /* ---------- Responsive ---------- */
 

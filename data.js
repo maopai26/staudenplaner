@@ -120,11 +120,11 @@ const PLANTS = [
     months: [5,6], sun: ["sonnig","halbschattig"], soil: ["lehmig"],
     colors: ["rosa","weiss","rot"], height: [60,100], planting: "Herbst" },
 
-  { id: "iris-barbata", nameDE: "Bart-Iris", nameLA: "Iris barbata-Hybriden",
+  { id: "iris-barbata", nameDE: "Bart-Iris", nameLA: "Iris barbata-Hybriden", wikiTitle: "Bart-Iris",
     months: [5,6], sun: ["sonnig"], soil: ["kalkhaltig","sandig"],
     colors: ["blau","violett","gelb","weiss","orange"], height: [60,100], planting: "Sommer (Juli–Aug.)" },
 
-  { id: "dianthus", nameDE: "Garten-Federnelke", nameLA: "Dianthus plumarius-Hybriden",
+  { id: "dianthus", nameDE: "Garten-Federnelke", nameLA: "Dianthus plumarius-Hybriden", wikiTitle: "Federnelken",
     months: [5,6,7], sun: ["sonnig"], soil: ["kalkhaltig","sandig"],
     colors: ["rosa","rot","weiss"], height: [20,40], planting: "Frühjahr oder Herbst" },
 
@@ -144,11 +144,11 @@ const PLANTS = [
     months: [6,7], sun: ["sonnig"], soil: ["sandig","lehmig"],
     colors: ["blau","rosa","gelb","rot","weiss"], height: [80,120], planting: "Frühjahr oder Herbst", toxic: true },
 
-  { id: "delphinium", nameDE: "Garten-Rittersporn", nameLA: "Delphinium-Hybriden",
+  { id: "delphinium", nameDE: "Garten-Rittersporn", nameLA: "Delphinium-Hybriden", wikiTitle: "Garten-Rittersporn",
     months: [6,7], sun: ["sonnig"], soil: ["lehmig"],
     colors: ["blau","violett","weiss","rosa"], height: [100,150], planting: "Frühjahr", toxic: true },
 
-  { id: "astilbe", nameDE: "Prachtspiere", nameLA: "Astilbe-Hybriden",
+  { id: "astilbe", nameDE: "Prachtspiere", nameLA: "Astilbe-Hybriden", wikiTitle: "Prachtspiere",
     months: [6,7,8], sun: ["halbschattig","schattig"], soil: ["feucht"],
     colors: ["rosa","rot","weiss","violett"], height: [40,100], planting: "Frühjahr oder Herbst" },
 
@@ -180,7 +180,7 @@ const PLANTS = [
     months: [6,7,8], sun: ["sonnig","halbschattig"], soil: ["lehmig"],
     colors: ["blau","weiss"], height: [40,60], planting: "Frühjahr oder Herbst" },
 
-  { id: "achillea", nameDE: "Garten-Schafgarbe", nameLA: "Achillea filipendulina",
+  { id: "achillea", nameDE: "Garten-Schafgarbe", nameLA: "Achillea filipendulina", wikiTitle: "Goldgarbe",
     months: [6,7,8], sun: ["sonnig"], soil: ["sandig","lehmig"],
     colors: ["gelb","rot","rosa","weiss"], height: [50,80], planting: "Frühjahr oder Herbst" },
 
@@ -192,11 +192,11 @@ const PLANTS = [
     months: [6,7,8,9], sun: ["sonnig"], soil: ["sandig","lehmig"],
     colors: ["gelb"], height: [40,60], planting: "Frühjahr" },
 
-  { id: "hemerocallis", nameDE: "Taglilie", nameLA: "Hemerocallis-Hybriden",
+  { id: "hemerocallis", nameDE: "Taglilie", nameLA: "Hemerocallis-Hybriden", wikiTitle: "Taglilien",
     months: [6,7,8], sun: ["sonnig","halbschattig"], soil: ["lehmig","feucht"],
     colors: ["gelb","orange","rot","rosa"], height: [60,90], planting: "Frühjahr oder Herbst" },
 
-  { id: "hosta", nameDE: "Funkie", nameLA: "Hosta-Hybriden",
+  { id: "hosta", nameDE: "Funkie", nameLA: "Hosta-Hybriden", wikiTitle: "Funkien",
     months: [7,8], sun: ["schattig","halbschattig"], soil: ["feucht","lehmig"],
     colors: ["violett","weiss"], height: [30,60], planting: "Frühjahr oder Herbst" },
 
@@ -232,7 +232,7 @@ const PLANTS = [
     months: [7,8,9], sun: ["sonnig"], soil: ["lehmig","feucht"],
     colors: ["orange","rot","gelb"], height: [60,80], planting: "Frühjahr" },
 
-  { id: "helenium", nameDE: "Sonnenbraut", nameLA: "Helenium-Hybriden",
+  { id: "helenium", nameDE: "Sonnenbraut", nameLA: "Helenium-Hybriden", wikiTitle: "Sonnenbraut (Pflanze)",
     months: [7,8,9], sun: ["sonnig"], soil: ["feucht","lehmig"],
     colors: ["gelb","orange","rot"], height: [80,120], planting: "Frühjahr oder Herbst" },
 
@@ -280,7 +280,7 @@ const PLANTS = [
     months: [9,10], sun: ["sonnig"], soil: ["feucht","lehmig"],
     colors: ["violett","rosa","blau","rot"], height: [80,120], planting: "Frühjahr oder Herbst" },
 
-  { id: "chrysanthemum", nameDE: "Garten-Chrysantheme", nameLA: "Chrysanthemum indicum-Hybriden",
+  { id: "chrysanthemum", nameDE: "Garten-Chrysantheme", nameLA: "Chrysanthemum indicum-Hybriden", wikiTitle: "Chrysanthemen",
     months: [9,10,11], sun: ["sonnig"], soil: ["lehmig"],
     colors: ["gelb","rot","rosa","orange","weiss"], height: [40,60], planting: "Frühjahr" },
 
@@ -297,4 +297,83 @@ const PLANTS = [
     months: [4,5], sun: ["halbschattig","schattig"], soil: ["sandig","kalkhaltig","lehmig"],
     colors: ["blau","violett"], height: [10,15], planting: "Frühjahr oder Herbst", toxic: true,
     note: "Immergrüner Bodendecker, verträgt auch trockenen Schatten." },
+
+  // ---- Ergänzungen v0.2 ------------------------------------------------
+
+  { id: "helianthus-multiflorus", nameDE: "Stauden-Sonnenblume", nameLA: "Helianthus x multiflorus",
+    months: [8,9], sun: ["sonnig"], soil: ["lehmig","feucht"],
+    colors: ["gelb"], height: [120,180], planting: "Frühjahr oder Herbst" },
+
+  { id: "kniphofia", nameDE: "Fackellilie", nameLA: "Kniphofia-Hybriden", wikiTitle: "Fackellilien",
+    months: [7,8,9], sun: ["sonnig"], soil: ["sandig","lehmig"],
+    colors: ["orange","rot","gelb"], height: [60,100], planting: "Frühjahr" },
+
+  { id: "erigeron-karvinskianus", nameDE: "Spanisches Gänseblümchen", nameLA: "Erigeron karvinskianus",
+    months: [6,7,8,9,10], sun: ["sonnig"], soil: ["sandig","kalkhaltig"],
+    colors: ["weiss","rosa"], height: [15,25], planting: "Frühjahr" },
+
+  { id: "persicaria-amplexicaulis", nameDE: "Kerzenknöterich", nameLA: "Persicaria amplexicaulis",
+    months: [7,8,9,10], sun: ["sonnig","halbschattig"], soil: ["feucht","lehmig"],
+    colors: ["rosa","rot"], height: [80,100], planting: "Frühjahr oder Herbst" },
+
+  { id: "filipendula-ulmaria", nameDE: "Echtes Mädesüß", nameLA: "Filipendula ulmaria",
+    months: [6,7,8], sun: ["halbschattig","sonnig"], soil: ["feucht"],
+    colors: ["weiss"], height: [100,150], planting: "Frühjahr oder Herbst" },
+
+  { id: "trollius-europaeus", nameDE: "Trollblume", nameLA: "Trollius europaeus",
+    months: [5,6], sun: ["halbschattig","sonnig"], soil: ["feucht"],
+    colors: ["gelb"], height: [40,60], planting: "Frühjahr oder Herbst" },
+
+  { id: "iris-sibirica", nameDE: "Sibirische Schwertlilie", nameLA: "Iris sibirica",
+    months: [5,6], sun: ["sonnig","halbschattig"], soil: ["feucht","lehmig"],
+    colors: ["blau","violett","weiss"], height: [60,90], planting: "Frühjahr oder Herbst" },
+
+  { id: "papaver-orientale", nameDE: "Türkischer Mohn", nameLA: "Papaver orientale",
+    months: [5,6], sun: ["sonnig"], soil: ["lehmig"],
+    colors: ["rot","orange","rosa","weiss"], height: [60,90], planting: "Herbst", toxic: true },
+
+  { id: "centaurea-montana", nameDE: "Berg-Flockenblume", nameLA: "Centaurea montana",
+    months: [5,6], sun: ["sonnig","halbschattig"], soil: ["lehmig"],
+    colors: ["blau","violett"], height: [40,50], planting: "Frühjahr oder Herbst" },
+
+  { id: "scabiosa-caucasica", nameDE: "Kaukasus-Skabiose", nameLA: "Scabiosa caucasica",
+    months: [6,7,8,9], sun: ["sonnig"], soil: ["kalkhaltig","sandig"],
+    colors: ["blau","violett","weiss"], height: [40,60], planting: "Frühjahr oder Herbst" },
+
+  { id: "knautia-macedonica", nameDE: "Mazedonische Witwenblume", nameLA: "Knautia macedonica",
+    months: [6,7,8,9], sun: ["sonnig"], soil: ["sandig","lehmig"],
+    colors: ["rot","violett"], height: [60,80], planting: "Frühjahr" },
+
+  { id: "anthemis-tinctoria", nameDE: "Färberkamille", nameLA: "Anthemis tinctoria",
+    months: [6,7,8], sun: ["sonnig"], soil: ["sandig","lehmig"],
+    colors: ["gelb"], height: [50,70], planting: "Frühjahr oder Herbst" },
+
+  { id: "penstemon", nameDE: "Bartfaden", nameLA: "Penstemon-Hybriden", wikiTitle: "Bartfaden",
+    months: [7,8,9], sun: ["sonnig"], soil: ["sandig","lehmig"],
+    colors: ["rot","rosa","violett","weiss"], height: [50,70], planting: "Frühjahr" },
+
+  { id: "waldsteinia", nameDE: "Ysskraut", nameLA: "Waldsteinia ternata",
+    months: [4,5], sun: ["halbschattig","schattig"], soil: ["sandig","lehmig"],
+    colors: ["gelb"], height: [10,15], planting: "Frühjahr oder Herbst",
+    note: "Bodendecker, verträgt auch trockenen Schatten." },
+
+  { id: "heuchera", nameDE: "Purpurglöckchen", nameLA: "Heuchera-Hybriden", wikiTitle: "Purpurglöckchen",
+    months: [6,7], sun: ["halbschattig","schattig"], soil: ["lehmig","feucht"],
+    colors: ["rosa","rot","weiss"], height: [30,50], planting: "Frühjahr oder Herbst" },
+
+  { id: "lysimachia-punctata", nameDE: "Gilbweiderich", nameLA: "Lysimachia punctata",
+    months: [6,7], sun: ["sonnig","halbschattig"], soil: ["feucht","lehmig"],
+    colors: ["gelb"], height: [60,80], planting: "Frühjahr oder Herbst" },
+
+  { id: "lythrum-salicaria", nameDE: "Blutweiderich", nameLA: "Lythrum salicaria",
+    months: [7,8], sun: ["sonnig","halbschattig"], soil: ["feucht"],
+    colors: ["rosa","violett"], height: [80,120], planting: "Frühjahr oder Herbst" },
+
+  { id: "eutrochium", nameDE: "Gewöhnlicher Wasserdost", nameLA: "Eutrochium maculatum", wikiTitle: "Eupatorium maculatum",
+    months: [8,9], sun: ["sonnig","halbschattig"], soil: ["feucht"],
+    colors: ["rosa","violett"], height: [120,180], planting: "Frühjahr" },
+
+  { id: "armeria-maritima", nameDE: "Grasnelke", nameLA: "Armeria maritima",
+    months: [5,6,7], sun: ["sonnig"], soil: ["sandig","kalkhaltig"],
+    colors: ["rosa","weiss"], height: [15,25], planting: "Frühjahr oder Herbst" },
 ];

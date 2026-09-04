@@ -2,6 +2,7 @@
   "name": "Staudenbeet-Planer — Blühkalender",
   "short_name": "Staudenbeet",
   "description": "Plane ein Staudenbeet, das ganzjährig blüht — gefiltert nach Standort, Bodentyp und Blütenfarbe für das westdeutsche Klima.",
+  "version": "0.2",
   "id": "/staudenbeet-planer/",
   "start_url": "./index.html",
   "scope": "./",

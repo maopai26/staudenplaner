@@ -36,17 +36,17 @@
     <h2 id="filters-title" class="panel-title">1. Rahmenbedingungen für dein Beet</h2>
 
     <fieldset class="field">
-      <legend>Standort <span class="req">— eine Auswahl</span></legend>
+      <legend>Standort <span class="req">— beliebig viele, optional</span></legend>
       <div class="chips" id="sun-chips" role="group" aria-label="Standort"></div>
     </fieldset>
 
     <fieldset class="field">
-      <legend>Bodentyp <span class="req">— eine Auswahl, gilt für das ganze Beet</span></legend>
+      <legend>Bodentyp <span class="req">— beliebig viele, optional</span></legend>
       <div class="chips" id="soil-chips" role="group" aria-label="Bodentyp"></div>
     </fieldset>
 
     <fieldset class="field">
-      <legend>Blütenfarben <span class="req">— bis zu 3, optional</span></legend>
+      <legend>Blütenfarben <span class="req">— beliebig viele, optional</span></legend>
       <div class="chips chips-color" id="color-chips" role="group" aria-label="Blütenfarben"></div>
     </fieldset>
 
@@ -62,14 +62,15 @@
     <div class="timeline" id="timeline"></div>
   </section>
 
-  <p class="hint-empty" id="empty-hint">Wähle oben Standort und Bodentyp aus und klicke auf &bdquo;Beet planen&ldquo;, um deinen Blühkalender zu sehen.</p>
+  <p class="hint-empty" id="empty-hint">Wähle oben deine Kriterien aus (alles ist optional und beliebig kombinierbar) und klicke auf &bdquo;Beet planen&ldquo;, um deinen Blühkalender zu sehen.</p>
 
 </main>
 
 <footer class="site-foot">
   <div class="wrap">
-    <p>Pflanzenfotos &amp; Kurzinfos verlinkt über die Wikipedia&#8209;API &mdash; Bildrechte bei den jeweiligen Autor:innen auf Wikimedia Commons.</p>
+    <p>Pflanzenfotos &amp; Kurzinfos verlinkt über die Wikipedia&#8209;API &mdash; Bildrechte bei den jeweiligen Autor:innen auf Wikimedia Commons. Die Fotos werden nur geladen, wenn die Seite über einen echten Webserver (z.&nbsp;B. GitHub Pages) läuft &mdash; bei lokalem Öffnen der Datei per Doppelklick blockiert der Browser diese Anfragen, dann erscheint stattdessen das Blüten&#8209;Platzhaltersymbol.</p>
     <p>Alle Angaben ohne Gewähr &mdash; giftige Zierpflanzen sind mit einem Hinweis gekennzeichnet. Prüfe Standort&#8209; und Bodenangaben vor dem Kauf am besten nochmal in deinem Gartencenter.</p>
+    <p class="version">Staudenbeet&#8209;Planer <span id="app-version">v0.2</span></p>
   </div>
 </footer>
 

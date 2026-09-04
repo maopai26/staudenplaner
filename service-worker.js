@@ -1,4 +1,4 @@
-const CACHE_NAME = "staudenbeet-shell-v1";
+const CACHE_NAME = "staudenbeet-shell-v2"; // v0.2 — bump bei jedem Release, damit Nutzer:innen das Update bekommen
 const CORE_ASSETS = [
   "./",
   "./index.html",

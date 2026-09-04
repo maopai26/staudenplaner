@@ -5,15 +5,16 @@
 (function () {
   "use strict";
 
-  const MAX_COLORS = 3;
+  const APP_VERSION = "0.2";
   const MAX_PER_MONTH = 3;
-  const IMG_CACHE_KEY = "staudenbeet:imgcache:v1";
-  const STATE_KEY = "staudenbeet:selection:v1";
+  const IMG_CACHE_KEY = "staudenbeet:imgcache:v2";
+  const STATE_KEY = "staudenbeet:selection:v2";
   const IMG_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 Tage
 
+  // Alle drei Filter sind jetzt Mehrfachauswahl-Listen. Leer = keine Einschraenkung.
   const state = {
-    sun: null,
-    soil: null,
+    sun: [],
+    soil: [],
     colors: [],
   };
 
@@ -27,6 +28,7 @@
     summary: document.getElementById("results-summary"),
     timeline: document.getElementById("timeline"),
     emptyHint: document.getElementById("empty-hint"),
+    versionTag: document.getElementById("app-version"),
   };
 
   // ---------------- Persistence ----------------
@@ -37,9 +39,9 @@
       if (!raw) return;
       const saved = JSON.parse(raw);
       if (saved && typeof saved === "object") {
-        state.sun = saved.sun || null;
-        state.soil = saved.soil || null;
-        state.colors = Array.isArray(saved.colors) ? saved.colors.slice(0, MAX_COLORS) : [];
+        state.sun = Array.isArray(saved.sun) ? saved.sun : [];
+        state.soil = Array.isArray(saved.soil) ? saved.soil : [];
+        state.colors = Array.isArray(saved.colors) ? saved.colors : [];
       }
     } catch (e) { /* ignore */ }
   }
@@ -91,38 +93,35 @@
     });
   }
 
+  // Keine Obergrenzen mehr irgendwo -- jede Chip-Gruppe ist frei kombinierbar,
+  // inkl. "alles auswaehlen". Leere Auswahl bedeutet weiterhin "keine Einschraenkung".
   function syncChipUI() {
     els.sunChips.querySelectorAll(".chip").forEach((c) => {
-      c.setAttribute("aria-pressed", String(c.dataset.key === state.sun));
+      c.setAttribute("aria-pressed", String(state.sun.includes(c.dataset.key)));
     });
     els.soilChips.querySelectorAll(".chip").forEach((c) => {
-      c.setAttribute("aria-pressed", String(c.dataset.key === state.soil));
+      c.setAttribute("aria-pressed", String(state.soil.includes(c.dataset.key)));
     });
-    const colorAtMax = state.colors.length >= MAX_COLORS;
     els.colorChips.querySelectorAll(".chip").forEach((c) => {
-      const active = state.colors.includes(c.dataset.key);
-      c.setAttribute("aria-pressed", String(active));
-      c.disabled = !active && colorAtMax;
+      c.setAttribute("aria-pressed", String(state.colors.includes(c.dataset.key)));
     });
+  }
+
+  function toggleInArray(arr, key) {
+    const idx = arr.indexOf(key);
+    if (idx > -1) arr.splice(idx, 1);
+    else arr.push(key);
   }
 
   function onChipClick(e) {
     const chip = e.target.closest(".chip");
-    if (!chip || chip.disabled) return;
+    if (!chip) return;
     const { key, group } = chip.dataset;
 
-    if (group === "sun") {
-      state.sun = state.sun === key ? null : key;
-    } else if (group === "soil") {
-      state.soil = state.soil === key ? null : key;
-    } else if (group === "color") {
-      const idx = state.colors.indexOf(key);
-      if (idx > -1) {
-        state.colors.splice(idx, 1);
-      } else if (state.colors.length < MAX_COLORS) {
-        state.colors.push(key);
-      }
-    }
+    if (group === "sun") toggleInArray(state.sun, key);
+    else if (group === "soil") toggleInArray(state.soil, key);
+    else if (group === "color") toggleInArray(state.colors, key);
+
     syncChipUI();
     saveState();
   }
@@ -130,12 +129,9 @@
   // ---------------- Planning ----------------
 
   function matchesFilters(plant) {
-    if (state.sun && !plant.sun.includes(state.sun)) return false;
-    if (state.soil && !plant.soil.includes(state.soil)) return false;
-    if (state.colors.length > 0) {
-      const hit = plant.colors.some((c) => state.colors.includes(c));
-      if (!hit) return false;
-    }
+    if (state.sun.length > 0 && !plant.sun.some((s) => state.sun.includes(s))) return false;
+    if (state.soil.length > 0 && !plant.soil.some((s) => state.soil.includes(s))) return false;
+    if (state.colors.length > 0 && !plant.colors.some((c) => state.colors.includes(c))) return false;
     return true;
   }
 
@@ -152,10 +148,6 @@
   }
 
   function planBed() {
-    if (!state.sun || !state.soil) {
-      showValidation();
-      return;
-    }
     const { groups, matchedCount } = buildMonthGroups();
     renderSummary(matchedCount);
     renderTimeline(groups);
@@ -164,43 +156,29 @@
     els.results.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function showValidation() {
-    const msg = "Bitte wähle mindestens Standort und Bodentyp aus, bevor du dein Beet planst.";
-    let box = document.getElementById("validation-msg");
-    if (!box) {
-      box = document.createElement("p");
-      box.id = "validation-msg";
-      box.style.color = "#7A3B4E";
-      box.style.fontSize = "0.92rem";
-      box.style.marginTop = "14px";
-      els.planBtn.closest(".field-actions").after(box);
-    }
-    box.textContent = msg;
-  }
-
-  function clearValidation() {
-    const box = document.getElementById("validation-msg");
-    if (box) box.remove();
-  }
-
   function labelFor(dict, key) {
     return dict[key] ? dict[key].label : key;
   }
 
-  function renderSummary(matchedCount) {
-    const colorPart = state.colors.length
-      ? state.colors.map((c) => labelFor(COLOR_INFO, c)).join(", ")
-      : "alle Farben";
-    let html =
-      `Dein Beet: <strong>${labelFor(SUN_INFO, state.sun)}</strong> &middot; ` +
-      `Boden: <strong>${labelFor(SOIL_INFO, state.soil)}</strong> (gilt für das ganze Beet) &middot; ` +
-      `Blütenfarben: <strong>${colorPart}</strong> &mdash; ${matchedCount} passende Staudenarten gefunden.`;
+  function joinLabels(dict, keys, allText) {
+    if (!keys.length) return allText;
+    return keys.map((k) => labelFor(dict, k)).join(", ");
+  }
 
+  function renderSummary(matchedCount) {
+    let html =
+      `Standort: <strong>${joinLabels(SUN_INFO, state.sun, "alle Standorte")}</strong> &middot; ` +
+      `Boden: <strong>${joinLabels(SOIL_INFO, state.soil, "alle Bodentypen")}</strong> &middot; ` +
+      `Blütenfarben: <strong>${joinLabels(COLOR_INFO, state.colors, "alle Farben")}</strong> ` +
+      `&mdash; ${matchedCount} passende Staudenarten gefunden.`;
+
+    if (state.soil.length > 1) {
+      html += ` Hinweis: Für ein einheitliches Beet am besten am Ende auf einen der angezeigten Bodentypen festlegen — jede Karte zeigt, welchen sie konkret braucht.`;
+    }
     if (matchedCount > 0 && matchedCount < 6) {
-      html += ` Diese Kombination aus Standort und Bodentyp ist anspruchsvoll &mdash; ` +
-        `hier lohnt sich eventuell eine Bodenverbesserung oder etwas mehr Farbauswahl.`;
+      html += ` Diese Kombination ist anspruchsvoll &mdash; hier lohnt sich eventuell eine Bodenverbesserung oder etwas mehr Auswahl.`;
     } else if (matchedCount === 0) {
-      html += ` Für diese Kombination wurde keine passende Staude gefunden &mdash; versuche einen anderen Bodentyp oder mehr Blütenfarben.`;
+      html += ` Für diese Kombination wurde keine passende Staude gefunden &mdash; versuche eine breitere Auswahl.`;
     }
     els.summary.innerHTML = html;
   }
@@ -289,7 +267,7 @@
     facts.className = "plant-facts";
     facts.appendChild(factRow("Blüte", monthRangeLabel(plant.months)));
     facts.appendChild(factRow("Wuchshöhe", `${plant.height[0]}–${plant.height[1]} cm`));
-    facts.appendChild(factRow("Bodentyp", labelFor(SOIL_INFO, state.soil)));
+    facts.appendChild(factRow("Bodentyp", plant.soil.map((s) => labelFor(SOIL_INFO, s)).join(" / ")));
     facts.appendChild(factRow("Pflanzzeit", plant.planting));
     info.appendChild(facts);
 
@@ -302,6 +280,7 @@
       imgEl.src = img.url;
       imgEl.alt = `${plant.nameDE} (${plant.nameLA}) in Blüte`;
       imgEl.loading = "lazy";
+      imgEl.onerror = () => { photo.innerHTML = fallbackSVG(); };
       photo.appendChild(imgEl);
       if (img.pageUrl) {
         const credit = document.createElement("a");
@@ -331,8 +310,6 @@
   }
 
   function monthRangeLabel(months) {
-    // Die Monate stehen in data.js bereits in der natürlichen Blühreihenfolge
-    // (z.B. [11,12,1,2,3] für Winterblüher) — daher genügt erstes/letztes Element.
     if (months.length === 1) return MONTH_SHORT[months[0]];
     return `${MONTH_SHORT[months[0]]}–${MONTH_SHORT[months[months.length - 1]]}`;
   }
@@ -354,24 +331,51 @@
   }
 
   // ---------------- Wikipedia image lookup ----------------
+  //
+  // Reihenfolge pro Pflanze: 1) manuelles wikiTitle (falls hinterlegt),
+  // 2) botanischer Name, 3) deutscher Name, 4) Wikipedia-Volltextsuche
+  // (opensearch) als letzter Versuch. Ergebnisse werden im Speicher UND
+  // in localStorage gecacht (30 Tage), damit spaetere Besuche schneller sind.
+  //
+  // Laeuft die Seite lokal ueber file:// (Doppelklick auf index.html) statt
+  // ueber einen Webserver, blockt der Browser diese Netzwerk-Aufrufe aus
+  // Sicherheitsgruenden (CORS) -- dann bleibt das Blueten-Icon als Platzhalter
+  // stehen. Ueber GitHub Pages oder "python3 -m http.server" funktioniert
+  // es normal.
 
   const memCache = new Map();
 
   function readDiskCache() {
-    try {
-      return JSON.parse(localStorage.getItem(IMG_CACHE_KEY)) || {};
-    } catch (e) { return {}; }
+    try { return JSON.parse(localStorage.getItem(IMG_CACHE_KEY)) || {}; }
+    catch (e) { return {}; }
   }
 
   function writeDiskCache(cache) {
-    try { localStorage.setItem(IMG_CACHE_KEY, JSON.stringify(cache)); } catch (e) { /* ignore, e.g. quota */ }
+    try { localStorage.setItem(IMG_CACHE_KEY, JSON.stringify(cache)); } catch (e) { /* ignore */ }
   }
 
   async function fetchSummary(title) {
     const url = `https://de.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g, "_"))}`;
     const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!res.ok) throw new Error("not found");
+    if (!res.ok) throw new Error("summary not found: " + title);
     return res.json();
+  }
+
+  async function findTitleViaSearch(query) {
+    const url = `https://de.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=1&namespace=0&format=json&origin=*`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("opensearch failed");
+    const data = await res.json();
+    return data && data[1] && data[1][0];
+  }
+
+  function summaryToResult(data) {
+    const src = data.thumbnail && data.thumbnail.source;
+    if (!src) return null;
+    return {
+      url: src.replace(/\/\d+px-/, "/480px-"),
+      pageUrl: data.content_urls && data.content_urls.desktop && data.content_urls.desktop.page,
+    };
   }
 
   async function loadPlantImage(plant) {
@@ -384,20 +388,25 @@
       return cached.data;
     }
 
-    const candidates = [plant.nameLA, plant.nameDE];
+    const candidates = [plant.wikiTitle, plant.nameLA, plant.nameDE].filter(Boolean);
     let result = null;
+
     for (const title of candidates) {
       try {
         const data = await fetchSummary(title);
-        const src = data.thumbnail && data.thumbnail.source;
-        if (src) {
-          result = {
-            url: src.replace(/\/\d+px-/, "/480px-"),
-            pageUrl: data.content_urls && data.content_urls.desktop && data.content_urls.desktop.page,
-          };
-          break;
+        result = summaryToResult(data);
+        if (result) break;
+      } catch (e) { /* naechster Kandidat */ }
+    }
+
+    if (!result) {
+      try {
+        const found = await findTitleViaSearch(plant.nameLA);
+        if (found) {
+          const data = await fetchSummary(found);
+          result = summaryToResult(data);
         }
-      } catch (e) { /* try next candidate */ }
+      } catch (e) { /* kein Treffer ueber die Suche */ }
     }
 
     memCache.set(plant.id, result);
@@ -411,12 +420,11 @@
   // ---------------- Init ----------------
 
   function resetAll() {
-    state.sun = null;
-    state.soil = null;
+    state.sun = [];
+    state.soil = [];
     state.colors = [];
     syncChipUI();
     saveState();
-    clearValidation();
     els.results.hidden = true;
     els.emptyHint.style.display = "";
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -427,8 +435,10 @@
     loadState();
     syncChipUI();
 
-    els.sunChips.addEventListener("click", (e) => { onChipClick(e); clearValidation(); });
-    els.soilChips.addEventListener("click", (e) => { onChipClick(e); clearValidation(); });
+    if (els.versionTag) els.versionTag.textContent = "v" + APP_VERSION;
+
+    els.sunChips.addEventListener("click", onChipClick);
+    els.soilChips.addEventListener("click", onChipClick);
     els.colorChips.addEventListener("click", onChipClick);
     els.planBtn.addEventListener("click", planBed);
     els.resetBtn.addEventListener("click", resetAll);
