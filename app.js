@@ -354,6 +354,28 @@
     try { localStorage.setItem(IMG_CACHE_KEY, JSON.stringify(cache)); } catch (e) { /* ignore */ }
   }
 
+  // Primärer Weg: die klassische MediaWiki-Action-API mit "origin=*" — das ist
+  // der offiziell von Wikimedia dokumentierte Weg, um CORS-Anfragen von einer
+  // beliebigen Domain aus zu erlauben (zuverlässiger als der neuere REST-Weg,
+  // der bei 404-Antworten laut Wikimedia-Bugtracker teils die CORS-Header verliert).
+  // "redirects=1" löst z.B. "Helleborus x hybridus" -> "Lenzrose" automatisch auf.
+  async function fetchViaActionApi(title) {
+    const url = `https://de.wikipedia.org/w/api.php?action=query&format=json&origin=*` +
+      `&prop=pageimages|info&piprop=thumbnail|original&pithumbsize=480&inprop=url` +
+      `&redirects=1&titles=${encodeURIComponent(title)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("action api failed: " + title);
+    const data = await res.json();
+    const pages = data && data.query && data.query.pages;
+    if (!pages) return null;
+    const page = Object.values(pages)[0];
+    if (!page || page.missing !== undefined) return null;
+    const src = page.thumbnail && page.thumbnail.source;
+    if (!src) return null;
+    return { url: src, pageUrl: page.fullurl };
+  }
+
+  // Fallback 1: RESTBase-Zusammenfassung (anderer Dienst, andere Fehlerquellen).
   async function fetchSummary(title) {
     const url = `https://de.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g, "_"))}`;
     const res = await fetch(url, { headers: { Accept: "application/json" } });
@@ -361,6 +383,7 @@
     return res.json();
   }
 
+  // Fallback 2: Volltextsuche, falls der Titel nirgends direkt passt.
   async function findTitleViaSearch(query) {
     const url = `https://de.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=1&namespace=0&format=json&origin=*`;
     const res = await fetch(url);
@@ -391,20 +414,31 @@
     const candidates = [plant.wikiTitle, plant.nameLA, plant.nameDE].filter(Boolean);
     let result = null;
 
+    // 1) Action-API pro Kandidat (primär)
     for (const title of candidates) {
       try {
-        const data = await fetchSummary(title);
-        result = summaryToResult(data);
+        result = await fetchViaActionApi(title);
         if (result) break;
       } catch (e) { /* naechster Kandidat */ }
     }
 
+    // 2) RESTBase-Zusammenfassung pro Kandidat (falls Action-API nichts fand)
+    if (!result) {
+      for (const title of candidates) {
+        try {
+          const data = await fetchSummary(title);
+          result = summaryToResult(data);
+          if (result) break;
+        } catch (e) { /* naechster Kandidat */ }
+      }
+    }
+
+    // 3) Volltextsuche als letzter Versuch
     if (!result) {
       try {
         const found = await findTitleViaSearch(plant.nameLA);
         if (found) {
-          const data = await fetchSummary(found);
-          result = summaryToResult(data);
+          result = await fetchViaActionApi(found);
         }
       } catch (e) { /* kein Treffer ueber die Suche */ }
     }
@@ -413,6 +447,8 @@
     if (result) {
       disk[plant.id] = { ts: Date.now(), data: result };
       writeDiskCache(disk);
+    } else if (typeof console !== "undefined") {
+      console.warn("Staudenbeet-Planer: kein Foto gefunden für", plant.nameDE, "(" + plant.nameLA + ")");
     }
     return result;
   }

@@ -317,7 +317,10 @@ main.wrap { padding-top: 36px; padding-bottom: 24px; }
 
 .card-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  /* Feste Kartenbreite statt 1fr: dadurch bleiben Bilder/Karten immer gleich
+     groß, egal ob 1, 2 oder 3 Alternativen in diesem Monat angezeigt werden
+     (vorher wurde eine einzelne Karte auf volle Zeilenbreite gestreckt). */
+  grid-template-columns: repeat(auto-fill, 210px);
   gap: 14px;
   margin-top: 12px;
 }
@@ -437,6 +440,7 @@ main.wrap { padding-top: 36px; padding-bottom: 24px; }
   .month-block { grid-template-columns: 48px 1fr; }
   .site-head { padding: 44px 0 34px; }
   .panel { padding: 22px 16px 26px; }
+  .card-row { grid-template-columns: repeat(auto-fill, 42vw); gap: 10px; }
 }
 
 /* ---------- Reveal animation (single orchestrated moment) ---------- */
