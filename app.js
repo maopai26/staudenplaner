@@ -288,7 +288,7 @@
         credit.href = img.pageUrl;
         credit.target = "_blank";
         credit.rel = "noopener noreferrer";
-        credit.textContent = "Foto: Wikipedia";
+        credit.textContent = "Foto: " + (img.source || "Wikipedia");
         photo.appendChild(credit);
       }
     });
@@ -383,7 +383,26 @@
     return res.json();
   }
 
-  // Fallback 2: Volltextsuche, falls der Titel nirgends direkt passt.
+  // Fallback 2: GBIF (Global Biodiversity Information Facility) — kostenlos,
+  // ohne API-Schlüssel, offiziell CORS-fähig. Liefert echte Beobachtungsfotos
+  // (u.a. von iNaturalist), falls Wikipedia für diese Art kein Bild hat.
+  async function fetchViaGbif(nameLA) {
+    const url = `https://api.gbif.org/v1/occurrence/search?scientificName=${encodeURIComponent(nameLA)}&mediaType=StillImage&limit=8`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("gbif failed: " + nameLA);
+    const data = await res.json();
+    const results = data && data.results;
+    if (!results || !results.length) return null;
+    for (const occ of results) {
+      const media = occ.media && occ.media.find((m) => m.type === "StillImage" && m.identifier);
+      if (media) {
+        return { url: media.identifier, pageUrl: `https://www.gbif.org/occurrence/${occ.key}`, source: "GBIF" };
+      }
+    }
+    return null;
+  }
+
+  // Fallback 3: Volltextsuche auf Wikipedia, falls gar kein Titel passt.
   async function findTitleViaSearch(query) {
     const url = `https://de.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=1&namespace=0&format=json&origin=*`;
     const res = await fetch(url);
@@ -433,7 +452,14 @@
       }
     }
 
-    // 3) Volltextsuche als letzter Versuch
+    // 3) GBIF als Bildquelle, falls Wikipedia für diese Art gar kein Foto hat
+    if (!result) {
+      try {
+        result = await fetchViaGbif(plant.nameLA);
+      } catch (e) { /* GBIF hat nichts gefunden */ }
+    }
+
+    // 4) Wikipedia-Volltextsuche als allerletzter Versuch
     if (!result) {
       try {
         const found = await findTitleViaSearch(plant.nameLA);

@@ -1,4 +1,4 @@
-const CACHE_NAME = "staudenbeet-shell-v2"; // v0.2 — bump bei jedem Release, damit Nutzer:innen das Update bekommen
+const CACHE_NAME = "staudenbeet-shell-v3"; // v0.2 — bump bei jedem Release, damit Nutzer:innen das Update bekommen
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -31,20 +31,22 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
-  // Nur eigene Dateien aus dem Cache bedienen; externe Aufrufe (z.B. Wikipedia-Bilder)
+  // Nur eigene Dateien behandeln; externe Aufrufe (z.B. Wikipedia-Bilder)
   // unangetastet durchs Netzwerk laufen lassen.
   if (url.origin !== self.location.origin) return;
 
+  // "Network-first": immer zuerst versuchen, die aktuelle Version aus dem
+  // Netz zu laden (und den Cache dabei zu aktualisieren). Nur wenn das
+  // Netzwerk nicht erreichbar ist (offline), greift der Cache als Fallback.
+  // So kann eine veraltete gecachte app.js/index.html nie mehr "hängen
+  // bleiben", wenn ein Update ausgeliefert wird.
   event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          return res;
-        })
-        .catch(() => caches.match("./index.html"));
-    })
+    fetch(req)
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        return res;
+      })
+      .catch(() => caches.match(req).then((cached) => cached || caches.match("./index.html")))
   );
 });
